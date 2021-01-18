@@ -6,65 +6,68 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import matplotlib.pyplot as plt
 
+import math
 import time
 import threading
 
 from PIL import ImageTk,Image 
 
+colores = ["#00838f", "#00acc1"]
 SIZE_WINDOW = "680x480"
+COLOR_ROJO = colores[1]
+COLOR_BLANCO = "white"
+FUENTE = ("Courier", 16)
+
 window = Tk()
-
 window.title("Volumen")
-
+window.config(background=COLOR_ROJO)
 window.geometry(SIZE_WINDOW)
 
-lbl_lado = Label(window, text="Lado:")
 
+lbl_lado = Label(window, text="Lado:", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
 lbl_lado.grid(column=0, row=0)
 
 txt_lado = Entry(window,width=10)
-
 txt_lado.grid(column=1, row=0)
 
 
-lbl_ed = Label(window, text="Espesor de empalme:")
-
+lbl_ed = Label(window, text="Espesor de empalme:", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
 lbl_ed.grid(column=0, row=1)
 
 txt_ed = Entry(window,width=10)
-
 txt_ed.grid(column=1, row=1)
 
 
 
-lbl_tn = Label(window, text="Terreno Natural: (A,B,C,D)")
+lbl_tn = Label(window, text="Terreno Natural: (A,B,C,D)", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
 lbl_tn.grid(column=0, row=2)
 
 txt_tn = Entry(window,width=20, textvariable=StringVar(window, "90.1, 90.1, 78.6, 79.0"))
 txt_tn.grid(column=1, row=2)
 
 
-lbl_sr = Label(window, text="Cota del terreno: (A,B,C,D)")
+lbl_sr = Label(window, text="Cota del terreno: (A,B,C,D)", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
 lbl_sr.grid(column=0, row=3)
 
 txt_sr = Entry(window,width=20, textvariable=StringVar(window, "63.5, 63.5, 63.5, 63.5"))
 txt_sr.grid(column=1, row=3)
 
 
-lbl_hx = Label(window, text="Hx: ")
-lbl_hx.grid(column = 4, row = 5)
+lbl_hx = Label(window, text="Hx: ", bg=COLOR_ROJO, fg=COLOR_BLANCO, font=FUENTE)
+lbl_hx.grid(column = 0, row = 5)
 
-lbl_vol = Label(window, text="Volumen: ")
-lbl_vol.grid(column = 4, row = 6)
+lbl_vol = Label(window, text="Volumen: ", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
+lbl_vol.grid(column = 0, row = 6)
 
 def calcular_relleno():
     abundamiento = float(txt_abundam.get())
     compactacion = float(txt_compacta.get())
 
-    vol_banco = fix2(ve.getVolumen()/ compactacion / 100.0)
+    vol_banco = fix2(ve.getVolumen() / (compactacion / 100.0) )
     lbl_vol_banco = Label(relleno_window, text="Volumen banco: "+str(vol_banco))
     lbl_vol_banco.grid(column=1, row=4)
 
+    global vol_suelto
     vol_suelto = fix2((1.0 + abundamiento / 100.0) * vol_banco)
     lbl_vol_suelto = Label(relleno_window, text="Vol suelto total: "+str(vol_suelto))
     lbl_vol_suelto.grid(column = 1, row = 5)
@@ -98,6 +101,9 @@ def rellenoOpen():
     btn_calc_relleno = Button(relleno_window, text="Calcular Vol Relleno", command=calcular_relleno)
     btn_calc_relleno.grid(column=2, row = 6)
 
+
+    btn_siguiente = Button(relleno_window, text="Sig: Viajes", command=viajesOpen)
+    btn_siguiente.grid(column = 2, row = 7)
     relleno_window.mainloop()
     """
     newWindow = Toplevel(window) 
@@ -117,6 +123,29 @@ def rellenoOpen():
     canvas.create_image(0, 0, image=img)
     newWindow.mainloop()
     """
+def clickViajes():    
+    viajes = vol_suelto / float(txt_capacidad.get())
+    lbl_viajes = Label(viajes_window, text="Viajes a realizar: "+str(math.ceil(viajes)))
+    lbl_viajes.grid(column = 0, row = 1)
+
+def viajesOpen():
+    global viajes_window
+    viajes_window = Toplevel(relleno_window)
+    viajes_window.title("Viajes")
+    viajes_window.geometry(SIZE_WINDOW)
+
+    lbl_capacidad = Label(viajes_window, text="Capacidad de la maquinaria: ")
+    lbl_capacidad.grid(column = 0, row = 0)
+
+    global txt_capacidad
+    txt_capacidad = Entry(viajes_window,width=10, textvariable=StringVar(viajes_window, ""))
+    txt_capacidad.grid(column=1, row=0)
+
+
+    btn_calcularViajes = Button(viajes_window, text="Calcular", command=clickViajes)
+    btn_calcularViajes.grid(column = 1, row = 2)
+    viajes_window-mainloop()
+
 def computeImage(lado, ve, sr, tn):
     fig = plt.figure()
     ax = Axes3D(fig)
