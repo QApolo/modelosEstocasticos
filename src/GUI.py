@@ -166,18 +166,27 @@ def computeImage(lado, ve, sr, tn):
 
     
     verts = [list(zip(x,y,z))]
-    ax.add_collection3d(Poly3DCollection(verts))
+    ax.add_collection3d(Poly3DCollection(verts, facecolors='tan', alpha=.8))
 
     ax.scatter(x,y,z)
     ax.scatter(x,y,za)
     ax.scatter(x,y,zb)
+    labels = ['A', 'B', 'C', 'D']
+    for i in range(0, 4):
+        ax.text(x[i],y[i],z[i],  '%s' % (labels[i]), size=15, zorder=1, color='k')
+    middle = (max(zb)+min(z)) // 2
+    for i in range(0, 4):
+        ax.text(x[i],y[i],zb[i],  'T.N.%s=: %s' % (labels[i], str(zb[i])), size=15, zorder=1, color='k')
+        ax.text(x[i], y[i], middle, 'h%s = %s' %(labels[i], abs(fix2(ve.getHx()[i])) ) )
 
     verts2 = [list(zip(x,y,za))]
     #ax.autoscale(False)
-    ax.add_collection3d(Poly3DCollection(verts2, facecolors='g'))
+    ax.add_collection3d(Poly3DCollection(verts2, facecolors='gray', alpha=.8))
 
   
-    ax.add_collection3d(Poly3DCollection(verts3, facecolors='r'))
+    ax.add_collection3d(Poly3DCollection(verts3, facecolors='g', alpha=.6))
+
+    #ax.text(5,5, 50, "red", color='green')
     plt.savefig("volumen.png")
     plt.show()
 
