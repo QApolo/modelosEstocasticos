@@ -13,14 +13,14 @@ import threading
 
 from PIL import ImageTk,Image 
 
-colores = ["#00838f", "#00acc1"]
+colores = ["#262338", "#00acc1"]
 SIZE_WINDOW = "680x480"
 COLOR_ROJO = colores[0]
 COLOR_BLANCO = "white"
 FUENTE = ("Courier", 16)
 
 window = Tk()
-window.title("Volumen")
+window.title("Volumen de excavacion")
 window.config(background=COLOR_ROJO)
 window.geometry(SIZE_WINDOW)
 
@@ -59,7 +59,7 @@ lbl_h_promedio.grid(column = 1, row=6)
 lbl_hx = Label(window, text="Hx (m): ", bg=COLOR_ROJO, fg=COLOR_BLANCO, font=FUENTE)
 lbl_hx.grid(column = 0, row = 5)
 
-lbl_vol = Label(window, text="Volumen: (m^3)", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
+lbl_vol = Label(window, text="Volumen (m^3)", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
 lbl_vol.grid(column = 0, row = 6)
 
 def calcular_relleno():
@@ -249,12 +249,16 @@ def new_window_presupuesto():
     window_presupuesto.title("Presupuesto de obra")
     window_presupuesto.config(background=COLOR_ROJO)
     window_presupuesto.geometry(SIZE_WINDOW)
-
-    lbl_costos_directos = Label(window_presupuesto, text="Costos Directos: "+str(costos_directos.sumAllHora()), bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
+    
+    lbl_costos_directos = Label(window_presupuesto, text="Costos Directos: ", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
     lbl_costos_directos.grid(column = 0, row = 1)
 
     lbl_IVA = Label(window_presupuesto, text="IVA (%)", bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
     lbl_IVA.grid(column = 0, row = 2)
+
+    global txt_costos_directos
+    txt_costos_directos = Entry(window_presupuesto,width=10, textvariable=StringVar(window_presupuesto, ""))
+    txt_costos_directos.grid(column=1, row=1)
 
     global txt_IVA
     txt_IVA = Entry(window_presupuesto,width=10, textvariable=StringVar(window_presupuesto, ""))
@@ -273,7 +277,8 @@ def new_window_presupuesto():
 
     window_presupuesto.mainloop()
 def calcular_presupuestos():
-    total_presupuesto = costos_directos.sumAllHora() * (float(txt_IVA.get())/100 + float(txt_costos_indirectos.get())/100) 
+    costos_directos2 = float(txt_costos_directos.get())
+    total_presupuesto = costos_directos2 * (float(txt_IVA.get())/100 + float(txt_costos_indirectos.get())/100) 
     total_presupuesto = fix2(total_presupuesto)
     lbl_total_presupuesto = Label(window_presupuesto, text="Total presupuesto $"+str(total_presupuesto), bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
     lbl_total_presupuesto.grid(column = 0, row = 5)
@@ -325,7 +330,7 @@ def calcular_planchas():
     ancho_plancha = float(txt_ancho_plancha.get())
 
     area_cancha = lado_cancha * ancho_cancha
-    area_plancha = lado_plancha * ancho_cancha
+    area_plancha = lado_plancha * ancho_plancha
 
     numero_planchas = area_cancha // area_plancha
 
@@ -365,21 +370,21 @@ def click_costos():
     costos_directos = CostosDirectos(costo_fijo, costo_consumo, costo_operacion)
 
 
-    string_costos_fijos = "Costos fijos\n Hora Activa: " + str(costo_fijo.getHoraActiva())\
-    + "\n Hora Inactiva: " + str(fix2( costo_fijo.getHoraInactiva() ) )\
-    + "\n Hora reserva: " + str(fix2( costo_fijo.getHoraReserva() ) )
+    string_costos_fijos = "Costos fijos\n Hora Activa: $" + str(costo_fijo.getHoraActiva())\
+    + "\n Hora Inactiva: $" + str(fix2( costo_fijo.getHoraInactiva() ) )\
+    + "\n Hora reserva: $" + str(fix2( costo_fijo.getHoraReserva() ) )
 
-    string_costos_consumo = "Costos Consumo\n Hora Activa: " + str(costo_consumo.getHoraActiva())\
-    + "\n Hora Inactiva: " + str(fix2( costo_consumo.getHoraInactiva() ) )\
-    + "\n Hora reserva: " + str(fix2( costo_consumo.getHoraReserva() ) )
+    string_costos_consumo = "Costos Consumo\n Hora Activa: $" + str(costo_consumo.getHoraActiva())\
+    + "\n Hora Inactiva: $" + str(fix2( costo_consumo.getHoraInactiva() ) )\
+    + "\n Hora reserva: $" + str(fix2( costo_consumo.getHoraReserva() ) )
 
-    string_costos_opera = "Costos por operación\n Hora Activa: " + str(costo_operacion.getHoraActiva())\
-    + "\n Hora Inactiva: " + str(fix2( costo_operacion.getHoraInactiva() ) )\
-    + "\n Hora reserva: " + str(fix2( costo_operacion.getHoraReserva() ) )
+    string_costos_opera = "Costos por operación\n Hora Activa: $" + str(costo_operacion.getHoraActiva())\
+    + "\n Hora Inactiva: $" + str(fix2( costo_operacion.getHoraInactiva() ) )\
+    + "\n Hora reserva: $" + str(fix2( costo_operacion.getHoraReserva() ) )
 
-    string_costos_direc = "\nCostos directos\n Hora Activa: " + str(costos_directos.getHoraActiva())\
-    + "\n Hora Inactiva: " + str(fix2( costos_directos.getHoraInactiva() ) )\
-    + "\n Hora reserva: " + str(fix2( costos_directos.getHoraReserva() ) )
+    string_costos_direc = "\nCostos directos\n Hora Activa: $" + str(costos_directos.getHoraActiva())\
+    + "\n Hora Inactiva: $" + str(fix2( costos_directos.getHoraInactiva() ) )\
+    + "\n Hora reserva: $" + str(fix2( costos_directos.getHoraReserva() ) )
 
 
      
@@ -395,8 +400,7 @@ def click_costos():
     lbl_res_costos_direc = Label(window_costos, text=string_costos_direc, bg=COLOR_ROJO, fg = COLOR_BLANCO, font=FUENTE)
     lbl_res_costos_direc.grid(column = 1, row = 18)
 
-    btn_calcular_planchas = Button(window_costos, text="Presupuesto", command=new_window_presupuesto)
-    btn_calcular_planchas.grid(column = 0, row = 19)
+    
 
 
     """print("\ncosto fijo")
@@ -494,8 +498,8 @@ def clicked():
     t1.start()
     t2.start()"""
     lbl_hx.configure(text = "Hx: (m) "+str(fix2List(ve.getHx())))
-    lbl_vol.configure(text = "Volumen: "+str(fix2(ve.getVolumen())) + " (m^3)")    
-    lbl_h_promedio.configure(text = "H promedio: " + str(fix2(ve.getH_prom())))
+    lbl_vol.configure(text = "Volumen: volumen de excavacion"+str(fix2(ve.getVolumen())) + " (m^3)")    
+    lbl_h_promedio.configure(text = "Altura promedio: " + str(fix2(ve.getH_prom())))
 
     computeImage(lado, ve, sr, tn)
 
@@ -511,8 +515,8 @@ def clicked():
     #openNewWindow() 
     
 def reset():
-    lbl_hx.configure(text = "Hx: ")
-    lbl_vol.configure(text = "Volumen: ")
+    lbl_hx.configure(text = "Hx (m):")
+    lbl_vol.configure(text = "Volumen (m^3):")
 
     txt_ed.delete(0, len(txt_ed.get()))
     txt_lado.delete(0, len(txt_lado.get()))
@@ -538,4 +542,7 @@ btn_costos.grid(column = 0, row = 8, padx=0, pady=200)
 
 btn_costos = Button(window, text="Planchas", command =new_window_cancha) 
 btn_costos.grid(column = 1, row = 8, padx=0, pady=200)
+
+btn_calcular_Presupuesto = Button(window, text="Presupuesto", command=new_window_presupuesto)
+btn_calcular_Presupuesto.grid(column = 2, row = 8)
 window.mainloop()
